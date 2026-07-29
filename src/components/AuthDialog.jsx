@@ -29,6 +29,7 @@ export default function AuthDialog({ open, onClose, onLogin, onRegister }) {
   const isRegister = mode === 'register';
 
   function updateField(event) {
+      setError('');
     setForm((current) => ({
       ...current,
       [event.target.name]: event.target.value,
@@ -57,7 +58,7 @@ export default function AuthDialog({ open, onClose, onLogin, onRegister }) {
         await onLogin(form);
       }
       setForm(initialForm);
-      onClose();
+
     } catch (err) {
       setError(err.message || 'Authentication failed.');
     } finally {
@@ -65,8 +66,15 @@ export default function AuthDialog({ open, onClose, onLogin, onRegister }) {
     }
   }
 
+  function handleClose() {
+    setForm(initialForm);
+    setError('');
+    setMode('login');
+    onClose();
+  }
+
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
+    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
       <Box component="form" onSubmit={handleSubmit}>
         <DialogTitle>{isRegister ? 'Create account' : 'Sign in'}</DialogTitle>
         <DialogContent>
@@ -100,7 +108,7 @@ export default function AuthDialog({ open, onClose, onLogin, onRegister }) {
           </Stack>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={handleClose}>Cancel</Button>
           <Button type="submit" variant="contained" disabled={submitting}>
             {submitting ? 'Working...' : isRegister ? 'Register' : 'Sign in'}
           </Button>

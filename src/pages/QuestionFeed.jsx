@@ -2,12 +2,12 @@ import { useState } from 'react';
 import {
   Box,
   Button,
-  CircularProgress,
-  InputAdornment,
   Paper,
+  Skeleton,
   Stack,
   TextField,
   Typography,
+  InputAdornment,
 } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -22,6 +22,7 @@ export default function QuestionFeed({
   onLoadMore,
   hasNext,
   searchIcon,
+  onAskQuestion,
 }) {
   const [draft, setDraft] = useState(searchTerm);
 
@@ -55,22 +56,52 @@ export default function QuestionFeed({
             onChange={(event) => setDraft(event.target.value)}
             placeholder="Search questions"
             InputProps={{
-              startAdornment: <InputAdornment position="start">{searchIcon}</InputAdornment>,
+              startAdornment: (
+                <InputAdornment position="start">
+                  {searchIcon}
+                </InputAdornment>
+              ),
             }}
           />
+
           <Button type="submit" variant="contained">
             Search
           </Button>
-          <Button variant="outlined" startIcon={<ClearIcon />} onClick={clearSearch}>
+
+          <Button
+            variant="outlined"
+            startIcon={<ClearIcon />}
+            onClick={clearSearch}
+          >
             Clear
           </Button>
         </Stack>
       </Paper>
 
       {loading && questions.length === 0 ? (
-        <Box sx={{ display: 'grid', placeItems: 'center', minHeight: 240 }}>
-          <CircularProgress />
-        </Box>
+        <Stack spacing={2}>
+          {[...Array(5)].map((_, index) => (
+            <Paper
+              key={index}
+              elevation={0}
+              sx={{
+                p: 2,
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 2,
+              }}
+            >
+              <Skeleton variant="text" width="60%" height={36} />
+              <Skeleton variant="text" width="95%" />
+              <Skeleton variant="text" width="90%" />
+
+              <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
+                <Skeleton variant="rounded" width={70} height={28} />
+                <Skeleton variant="rounded" width={90} height={28} />
+              </Stack>
+            </Paper>
+          ))}
+        </Stack>
       ) : questions.length === 0 ? (
         <Paper
           elevation={0}
@@ -82,15 +113,46 @@ export default function QuestionFeed({
             textAlign: 'center',
           }}
         >
-          <Typography variant="h3">No questions found</Typography>
-          <Typography color="text.secondary" sx={{ mt: 1 }}>
-            Try a different search or post the first question.
+          <Typography variant="h3">
+            {searchTerm ? 'No matching questions' : 'No questions yet'}
           </Typography>
+
+          <Typography color="text.secondary" sx={{ mt: 1 }}>
+            {searchTerm
+              ? 'Try searching with different keywords.'
+              : 'Be the first one to ask a question and start the discussion.'}
+          </Typography>
+
+          <Stack
+            direction="row"
+            justifyContent="center"
+            sx={{ mt: 3 }}
+          >
+            {searchTerm ? (
+              <Button
+                variant="outlined"
+                startIcon={<ClearIcon />}
+                onClick={clearSearch}
+              >
+                Clear Search
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                onClick={onAskQuestion}
+              >
+                Ask the First Question
+              </Button>
+            )}
+          </Stack>
         </Paper>
       ) : (
         <Stack spacing={2}>
           {questions.map((question) => (
-            <QuestionCard key={question.id || `${question.title}-${question.createdAt}`} question={question} />
+            <QuestionCard
+              key={question.id || `${question.title}-${question.createdAt}`}
+              question={question}
+            />
           ))}
         </Stack>
       )}
