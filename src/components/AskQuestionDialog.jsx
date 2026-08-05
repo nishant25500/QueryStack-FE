@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Alert,
   Box,
@@ -17,7 +17,7 @@ const initialForm = {
   content: '',
 };
 
-export default function AskQuestionDialog({ open, onClose, onSubmit }) {
+export default function AskQuestionDialog({ open, onClose, onSubmit, initialValues = initialForm, mode = "create" }) {
   const [form, setForm] = useState(initialForm);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -60,10 +60,14 @@ export default function AskQuestionDialog({ open, onClose, onSubmit }) {
     }
   }
 
+
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <Box component="form" onSubmit={handleSubmit}>
-        <DialogTitle>Ask a question</DialogTitle>
+        <DialogTitle>
+          {mode === 'edit' ? 'Edit Question' : 'Ask a Question'}
+        </DialogTitle>
         <DialogContent>
           <Stack spacing={2.5} sx={{ pt: 1 }}>
             {error && <Alert severity="error">{error}</Alert>}
@@ -95,7 +99,15 @@ export default function AskQuestionDialog({ open, onClose, onSubmit }) {
         <DialogActions sx={{ px: 3, pb: 3 }}>
           <Button onClick={onClose}>Cancel</Button>
           <Button type="submit" variant="contained" startIcon={<SendIcon />} disabled={submitting}>
-            {submitting ? 'Posting...' : 'Post'}
+            {
+                submitting
+                ? mode === 'edit'
+                    ? 'Saving...'
+                    : 'Posting...'
+                : mode === 'edit'
+                    ? 'Save'
+                    : 'Post'
+            }
           </Button>
         </DialogActions>
       </Box>

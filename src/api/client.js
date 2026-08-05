@@ -101,4 +101,11 @@ export const questionApi = {
       body: JSON.stringify(payload),
     });
   },
+
+  update(id, payload) {
+    return request(questionBaseUrl, `/question/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    });
+  },
 };

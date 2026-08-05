@@ -16,10 +16,14 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { questionApi } from '../api/client';
 
+import EditIcon from '@mui/icons-material/Edit';
+import AskQuestionDialog from '../components/AskQuestionDialog';
+
 export default function QuestionDetails() {
   const navigate = useNavigate();
   const { id } = useParams();
 
+  const [editOpen, setEditOpen] = useState(false);
   const [question, setQuestion] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -45,14 +49,27 @@ export default function QuestionDetails() {
   return (
     <Container maxWidth="md" sx={{ py: 5 }}>
       <Stack spacing={3}>
-        <Button
-          variant="text"
-          startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/')}
-          sx={{ alignSelf: 'flex-start' }}
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
         >
-          Back to Questions
-        </Button>
+          <Button
+            variant="text"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)}
+          >
+            Back
+          </Button>
+
+          <Button
+            variant="contained"
+            startIcon={<EditIcon />}
+            onClick={() => setEditOpen(true)}
+          >
+            Edit
+          </Button>
+        </Stack>
 
         {loading ? (
           <Paper
@@ -147,6 +164,20 @@ export default function QuestionDetails() {
           </Paper>
         )}
       </Stack>
+      <AskQuestionDialog
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        mode="edit"
+        initialValues={{
+          title: question?.title ?? '',
+          content: question?.content ?? '',
+        }}
+        onSubmit={async (payload) => {
+          const updatedQuestion = await questionApi.update(id, payload);
+          setQuestion(updatedQuestion);
+          setEditOpen(false);
+        }}
+      />
     </Container>
   );
 }
