@@ -78,6 +78,10 @@ export const questionApi = {
     return request(questionBaseUrl, `/question/all?${params.toString()}`);
   },
 
+  getById(id) {
+    return request(questionBaseUrl, `/question/${id}`);
+  },
+
   search({ searchTerm, pageNumber = 0, pageSize = 12 }) {
     const params = new URLSearchParams({
       searchTerm,
