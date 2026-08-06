@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -35,6 +35,9 @@ export default function QuestionFeed({
     setDraft('');
     onClearSearch();
   }
+  useEffect(() => {
+    setDraft(searchTerm);
+  }, [searchTerm]);
 
   return (
     <Stack spacing={2.5}>

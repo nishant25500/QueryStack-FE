@@ -149,6 +149,7 @@ export default function HomePage() {
               }
               hasNext={!searchTerm && hasNext}
               searchIcon={<SearchIcon />}
+              onAskQuestion={handleAskClick}
             />
           </Stack>
         </Container>

@@ -10,24 +10,7 @@ import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import { useNavigate } from 'react-router-dom';
-
-function formatDate(value) {
-  if (!value) return 'No date';
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return 'No date';
-  }
-
-  return new Intl.DateTimeFormat(undefined, {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(date);
-}
+import { formatRelativeTime } from '../utils/dateUtils';
 
 export default function QuestionCard({ question }) {
   const navigate = useNavigate();
@@ -64,7 +47,7 @@ export default function QuestionCard({ question }) {
               variant="caption"
               color="text.secondary"
             >
-              {formatDate(question.createdAt)}
+              {formatRelativeTime(question.createdAt)}
             </Typography>
           </Stack>
 
@@ -72,7 +55,15 @@ export default function QuestionCard({ question }) {
             {question.title}
           </Typography>
 
-          <Typography color="text.secondary">
+          <Typography
+            color="text.secondary"
+            sx={{
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+            }}
+          >
             {question.content}
           </Typography>
 
@@ -96,7 +87,7 @@ export default function QuestionCard({ question }) {
                 variant="body2"
                 color="text.secondary"
               >
-                {question.createdBy || 'Unknown'}
+                {(question.createdBy || 'Unknown').split('@')[0]}
               </Typography>
             </Stack>
 

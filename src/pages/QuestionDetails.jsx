@@ -20,6 +20,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AskQuestionDialog from '../components/AskQuestionDialog';
 
+import { formatRelativeTime } from '../utils/dateUtils';
+
 export default function QuestionDetails() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -60,7 +62,11 @@ export default function QuestionDetails() {
       try {
           await questionApi.delete(id);
 
-          navigate("/");
+          navigate("/", {
+              state: {
+                  message: "Question deleted successfully"
+              }
+          });
       } catch (err) {
           alert(err.message);
       }
@@ -82,6 +88,7 @@ export default function QuestionDetails() {
             Back
           </Button>
 
+          <Stack direction="row" spacing={1}>
           <Button
             variant="contained"
             startIcon={<EditIcon />}
@@ -98,6 +105,7 @@ export default function QuestionDetails() {
               >
                   Delete
               </Button>
+              </Stack>
         </Stack>
 
         {loading ? (
@@ -123,7 +131,31 @@ export default function QuestionDetails() {
             </Stack>
           </Paper>
         ) : error ? (
-          <Alert severity="error">{error}</Alert>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 6,
+              textAlign: 'center',
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 2,
+            }}
+          >
+            <Typography variant="h4" gutterBottom>
+              Question not found
+            </Typography>
+
+            <Typography color="text.secondary">
+              {error}
+            </Typography>
+
+            <Button
+              sx={{ mt: 3 }}
+              onClick={() => navigate('/')}
+            >
+              Back to Home
+            </Button>
+          </Paper>
         ) : (
           <Paper
             elevation={0}
@@ -150,7 +182,7 @@ export default function QuestionDetails() {
                 >
                   Asked by{' '}
                   <strong>
-                    {question.createdBy || 'Unknown'}
+                    {(question.createdBy || 'Unknown').split('@')[0]}
                   </strong>
                 </Typography>
 
@@ -158,7 +190,7 @@ export default function QuestionDetails() {
                   variant="body2"
                   color="text.secondary"
                 >
-                  {new Date(question.createdAt).toLocaleString()}
+                  {formatRelativeTime(question.createdAt)}
                 </Typography>
               </Stack>
 
