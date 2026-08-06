@@ -17,6 +17,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { questionApi } from '../api/client';
 
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import AskQuestionDialog from '../components/AskQuestionDialog';
 
 export default function QuestionDetails() {
@@ -46,6 +47,25 @@ export default function QuestionDetails() {
     loadQuestion();
   }, [id]);
 
+  async function handleDelete() {
+
+      const confirmed = window.confirm(
+          "Are you sure you want to delete this question?"
+      );
+
+      if (!confirmed) {
+          return;
+      }
+
+      try {
+          await questionApi.delete(id);
+
+          navigate("/");
+      } catch (err) {
+          alert(err.message);
+      }
+  }
+
   return (
     <Container maxWidth="md" sx={{ py: 5 }}>
       <Stack spacing={3}>
@@ -69,6 +89,15 @@ export default function QuestionDetails() {
           >
             Edit
           </Button>
+
+          <Button
+                  color="error"
+                  variant="outlined"
+                  startIcon={<DeleteIcon />}
+                  onClick={handleDelete}
+              >
+                  Delete
+              </Button>
         </Stack>
 
         {loading ? (

@@ -108,4 +108,10 @@ export const questionApi = {
       body: JSON.stringify(payload),
     });
   },
+
+  delete(id) {
+    return request(questionBaseUrl, `/question/${id}`, {
+      method: 'DELETE',
+    });
+  },
 };
