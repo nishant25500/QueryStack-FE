@@ -12,13 +12,14 @@ import {
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { questionApi } from '../api/client';
 
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import AskQuestionDialog from '../components/AskQuestionDialog';
+import AnswerSection from '../components/AnswerSection';
 
 import { formatRelativeTime } from '../utils/dateUtils';
 
@@ -50,31 +51,31 @@ export default function QuestionDetails() {
   }, [id]);
 
   async function handleDelete() {
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this question?'
+    );
 
-      const confirmed = window.confirm(
-          "Are you sure you want to delete this question?"
-      );
+    if (!confirmed) {
+      return;
+    }
 
-      if (!confirmed) {
-          return;
-      }
+    try {
+      await questionApi.delete(id);
 
-      try {
-          await questionApi.delete(id);
-
-          navigate("/", {
-              state: {
-                  message: "Question deleted successfully"
-              }
-          });
-      } catch (err) {
-          alert(err.message);
-      }
+      navigate('/', {
+        state: {
+          message: 'Question deleted successfully',
+        },
+      });
+    } catch (err) {
+      alert(err.message);
+    }
   }
 
   return (
     <Container maxWidth="md" sx={{ py: 5 }}>
       <Stack spacing={3}>
+        {/* Header */}
         <Stack
           direction="row"
           justifyContent="space-between"
@@ -89,25 +90,26 @@ export default function QuestionDetails() {
           </Button>
 
           <Stack direction="row" spacing={1}>
-          <Button
-            variant="contained"
-            startIcon={<EditIcon />}
-            onClick={() => setEditOpen(true)}
-          >
-            Edit
-          </Button>
+            <Button
+              variant="contained"
+              startIcon={<EditIcon />}
+              onClick={() => setEditOpen(true)}
+            >
+              Edit
+            </Button>
 
-          <Button
-                  color="error"
-                  variant="outlined"
-                  startIcon={<DeleteIcon />}
-                  onClick={handleDelete}
-              >
-                  Delete
-              </Button>
-              </Stack>
+            <Button
+              color="error"
+              variant="outlined"
+              startIcon={<DeleteIcon />}
+              onClick={handleDelete}
+            >
+              Delete
+            </Button>
+          </Stack>
         </Stack>
 
+        {/* Question */}
         {loading ? (
           <Paper
             elevation={0}
@@ -224,7 +226,14 @@ export default function QuestionDetails() {
             </Stack>
           </Paper>
         )}
+
+        {/* Answers */}
+        {!loading && !error && question && (
+          <AnswerSection questionId={id} />
+        )}
       </Stack>
+
+      {/* Edit Question Dialog */}
       <AskQuestionDialog
         open={editOpen}
         onClose={() => setEditOpen(false)}
@@ -235,6 +244,7 @@ export default function QuestionDetails() {
         }}
         onSubmit={async (payload) => {
           const updatedQuestion = await questionApi.update(id, payload);
+
           setQuestion(updatedQuestion);
           setEditOpen(false);
         }}

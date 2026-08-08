@@ -2,6 +2,7 @@ import { STORAGE_KEYS } from '../constants/storage';
 
 const authBaseUrl = import.meta.env.VITE_AUTH_BASE_URL || '/api';
 const questionBaseUrl = import.meta.env.VITE_QUESTION_BASE_URL || '/api';
+const answerBaseUrl = import.meta.env.VITE_ANSWER_BASE_URL || '/api';
 
 async function request(baseUrl, path, options = {}) {
   const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
@@ -113,5 +114,42 @@ export const questionApi = {
     return request(questionBaseUrl, `/question/${id}`, {
       method: 'DELETE',
     });
+  },
+};
+
+export const answerApi = {
+  listByQuestion(questionId) {
+    return request(
+      answerBaseUrl,
+      `/answers/question/${questionId}`
+    );
+  },
+
+  create(payload) {
+    return request(answerBaseUrl, '/answers', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+
+  update(answerId, payload) {
+    return request(
+      answerBaseUrl,
+      `/answers/${answerId}`,
+      {
+        method: 'PUT',
+        body: JSON.stringify(payload),
+      }
+    );
+  },
+
+  delete(answerId) {
+    return request(
+      answerBaseUrl,
+      `/answers/${answerId}`,
+      {
+        method: 'DELETE',
+      }
+    );
   },
 };

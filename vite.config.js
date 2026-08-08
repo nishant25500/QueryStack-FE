@@ -18,6 +18,10 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
+      '/api/answers': {
+         target: 'http://localhost:8082',
+         changeOrigin: true,
+      },
     },
   },
 });
